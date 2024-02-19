@@ -1,0 +1,244 @@
+---
+title: Parquet files for large <br/> (and big) <br/> data dissemination
+subtitle: |
+  **[Workshop OECD, 02/2024]{.orange}**
+author:
+    - name: "**[[Lino Galiana](https://www.linogaliana.fr/)]{.blue2}**"
+      email: lino.galiana@insee.fr
+      affiliations:
+        - name: "[__Insee__]{.orange}"
+#date: 06-09-2023
+slide-number: true
+footer: |
+  **SIS-CC Technical ATF - Scalable and blazing fast .Stat Suite – Third Session**
+# uncomment for French presentations:
+lang: fr-FR
+# for blind readers:
+slide-tone: false
+# for @olevitt:
+#chalkboard: # press the B key to toggle chalkboard
+#  theme: whiteboard
+# uncomment to use the multiplex mode:
+#multiplex: true
+format:
+  # pick the light mode (onyxia-revealjs) or the dark mode (onyxia-dark-revealjs)
+  onyxia-revealjs
+  #onyxia-dark-revealjs:
+    #output-file: slides.html
+from: markdown+emoji
+css: custom.css
+---
+
+# 
+
+<h3>We tried [Parquet]{.blue} for bulk data dissemination...</h3>
+
+![[_Detailed results of the Census requested with DuckDB_](https://ssphub.netlify.app/post/parquetrp/)](img/ducks.png){fig-align="center" height=400}
+
+
+# 
+
+<h3>...and our users [loved]{.red} it!</h3>
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](https://git.lab.sspcloud.fr/ssplab/parquet_insee_contact/-/raw/master/img/retour_utilisateur_1.png){width=700px}
+:::
+
+::: {.column width="50%"}
+![](https://git.lab.sspcloud.fr/ssplab/parquet_insee_contact/-/raw/master/img/retour_utilisateur_2.png){width=700px}
+:::
+
+::::
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](https://git.lab.sspcloud.fr/ssplab/parquet_insee_contact/-/raw/master/img/img3.png){width=700px}
+:::
+
+::: {.column width="50%"}
+![](https://git.lab.sspcloud.fr/ssplab/parquet_insee_contact/-/raw/master/img/img4.png){width=700px}
+:::
+
+::::
+
+# 
+
+<h3>...now other organizations use `Parquet` for dissemination  !</h3>
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](img/loquet.png)
+:::
+
+::: {.column width="50%"}
+[Detailed official crime statistics for France](https://www.linkedin.com/feed/update/urn:li:activity:7163227953928089601/)
+:::
+
+::::
+
+
+## What is `Parquet` ?
+
+- A __[big data file format]{.blue2}__ created in 2013
+- __[Open source]{.blue2}__ (Apache Foundation)
+- Optimised for __[analytics]{.blue2}__ workloads (OLAP)
+  * Columnar-oriented
+  * Efficient compression  
+
+
+![](img/Apache_Parquet_logo.png){fig-align="center" width=60%}
+
+
+
+## Parquet files are [easy to create]{.blue2}
+
+- A file format supported by a large ecosystem 
+- Available in {{< fa brands r-project >}}, {{< fa brands python >}}, `Rust`, `Java`, {{< fa brands js-square >}}, `C#`, `C++`...
+
+::: {layout-ncol=2}
+
+![](img/arrow-logo.png){height="150"}
+
+![](img/duckdb_logo.png){height="150"}
+:::
+
+
+::: {layout-ncol=2}
+![](img/Apache_Spark_logo.png){height="150"}
+
+![](img/polars_logo.png){height="150"}
+:::
+
+
+## Parquet files are [easy to use]{.blue2}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Requests are [efficient]{.blue}**  
+_Only the required chunks of data are read_
+:::
+
+
+::: {.column width="50%"}
+![](img/parquet(1).png)
+:::
+
+::::
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**With [DuckDB]{.blue}, Parquet files can be**\
+**requested [over the web]{.red}**  
+_No need to download the whole file!_
+:::
+
+
+::: {.column width="50%"}
+![](img/blef.png)
+:::
+
+::::
+
+## Parquet is universal with `DuckDB`
+
+::: {.panel-tabset}
+
+## `JavaScript` {{< fa brands js-square >}}
+
+```{ojs}
+//| echo: true
+db = {
+  const configuredClient = await DuckDBClient.of() ;
+  await configuredClient.query(
+    `CREATE VIEW franceRP AS
+    SELECT CANTVILLE, AGED, SEXE, FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet')`)
+  return configuredClient
+}
+```
+
+## `Python` {{< fa brands python >}}
+
+```{.python}
+import duckdb
+
+duckdb.sql(f'''
+  CREATE OR REPLACE VIEW franceRP
+  AS SELECT CANTVILLE, AGED, SEXE, FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet') LIMIT 5
+''')
+)
+```
+
+
+## {{< fa brands r-project >}}
+
+```{.r}
+library(duckdb)
+library(glue)
+
+# Pour créer une base de données en mémoire
+con <- dbConnect(duckdb())
+
+
+
+dbExecute(
+  con,
+  glue_sql(  
+  "CREATE OR REPLACE VIEW franceRP",
+  "AS SELECT CANTVILLE, AGED, SEXE, FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet') LIMIT 5"),
+    .con=con
+)
+```
+
+:::
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{ojs}
+Inputs.table(
+  db.query(`SELECT * FROM franceRP LIMIT 5`)
+)
+```
+
+:::
+
+
+::: {.column width="50%"}
+
+```{ojs}
+Plot.rectY(df_full, Plot.binX({y: "sum"}, {x: "AGED", y: (d) => d.SEXE == 1 ? 1 : -1, fill: "SEXE", tip: true})).plot({y: {label: "Frequency"}})
+```
+
+
+```{ojs}
+df_full = db.query(`SELECT * FROM franceRP LIMIT 1000000`)
+```
+
+:::
+
+::::
+
+## Parquet as a [default]{.blue2} file format for dissemination? {.smaller}
+
+- Parquet can handle any size of data  
+  (small, large and big)
+- Adopted as INSEE's internal default file format, replacing SAS format (`SAS7BDAT`)
+- Our experiment for bulk data dissemination was a great success!
+
+\ 
+
+### **[Is it the]{.blue} [future]{.red} [of open data?]{.blue}** {style="text-align: center;"}
+
+
+_FMI, read Robin Linacre's post ["Why parquet file are my preferred API for bulk open data?"](https://www.robinlinacre.com/parquet_api/)_
