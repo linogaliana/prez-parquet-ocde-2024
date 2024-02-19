@@ -160,7 +160,7 @@ db = {
   const configuredClient = await DuckDBClient.of() ;
   await configuredClient.query(
     `CREATE VIEW franceRP AS
-    SELECT CANTVILLE, AGED, SEXE, FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet')`)
+    SELECT CANTVILLE, AGED, SEXE, IPONDI FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet')`)
   return configuredClient
 }
 ```
@@ -172,7 +172,7 @@ import duckdb
 
 duckdb.sql(f'''
   CREATE OR REPLACE VIEW franceRP
-  AS SELECT CANTVILLE, AGED, SEXE, FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet') LIMIT 5
+  AS SELECT CANTVILLE, AGED, SEXE, IPONDI FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet') LIMIT 5
 ''')
 )
 ```
@@ -193,7 +193,7 @@ dbExecute(
   con,
   glue_sql(  
   "CREATE OR REPLACE VIEW franceRP",
-  "AS SELECT CANTVILLE, AGED, SEXE, FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet') LIMIT 5"),
+  "AS SELECT CANTVILLE, AGED, SEXE, IPONDI FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet') LIMIT 5"),
     .con=con
 )
 ```
@@ -207,7 +207,7 @@ dbExecute(
 
 ```{ojs}
 Inputs.table(
-  db.query(`SELECT * FROM franceRP LIMIT 5`)
+  db.query(`SELECT CANTVILLE, AGED, SEXE FROM franceRP LIMIT 5`)
 )
 ```
 
@@ -217,7 +217,7 @@ Inputs.table(
 ::: {.column width="50%"}
 
 ```{ojs}
-Plot.rectY(df_full, Plot.binX({y: "sum"}, {x: "AGED", y: (d) => d.SEXE == 1 ? 1 : -1, fill: "SEXE", tip: true})).plot({y: {label: "Frequency"}})
+Plot.rectY(df_full, Plot.binX({y: "sum"}, {x: "AGED", y: d => d.SEXE == 1 ? d.IPONDI : -d.IPONDI, fill: "SEXE", tip: true})).plot({y: {label: "Frequency"}})
 ```
 
 
