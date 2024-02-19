@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "index.html#what-is-parquet",
+    "href": "index.html#what-is-parquet",
+    "title": "Parquet files for large  (and big)  data dissemination",
+    "section": "What is Parquet ?",
+    "text": "What is Parquet ?\n\nA big data file format created in 2013\nOpen source (Apache Foundation)\nOptimised for analytics workloads (OLAP)\n\nColumnar-oriented\nEfficient compression"
+  },
+  {
+    "objectID": "index.html#parquet-files-are-easy-to-create",
+    "href": "index.html#parquet-files-are-easy-to-create",
+    "title": "Parquet files for large  (and big)  data dissemination",
+    "section": "Parquet files are easy to create",
+    "text": "Parquet files are easy to create\n\nA file format supported by a large ecosystem\nAvailable in , , Rust, Java, , C#, C++…"
+  },
+  {
+    "objectID": "index.html#parquet-files-are-easy-to-use",
+    "href": "index.html#parquet-files-are-easy-to-use",
+    "title": "Parquet files for large  (and big)  data dissemination",
+    "section": "Parquet files are easy to use",
+    "text": "Parquet files are easy to use\n\n\nRequests are efficient\nOnly the required chunks of data are read\n\n\n\n\n\n\nWith DuckDB, Parquet files can be\nrequested over the web\nNo need to download the whole file!"
+  },
+  {
+    "objectID": "index.html#parquet-is-universal-with-duckdb",
+    "href": "index.html#parquet-is-universal-with-duckdb",
+    "title": "Parquet files for large  (and big)  data dissemination",
+    "section": "Parquet is universal with DuckDB",
+    "text": "Parquet is universal with DuckDB\n\nJavaScript Python \n\n\n\ndb = {\n  const configuredClient = await DuckDBClient.of() ;\n  await configuredClient.query(\n    `CREATE VIEW franceRP AS\n    SELECT CANTVILLE, AGED, SEXE, IPONDI FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet')`)\n  return configuredClient\n}\n\n\n\n\n\n\n\n\nimport duckdb\n\nduckdb.sql(f'''\n  CREATE OR REPLACE VIEW franceRP\n  AS SELECT CANTVILLE, AGED, SEXE, IPONDI FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet') LIMIT 5\n''')\n)\n\n\nlibrary(duckdb)\nlibrary(glue)\n\n# Pour créer une base de données en mémoire\ncon &lt;- dbConnect(duckdb())\n\n\n\ndbExecute(\n  con,\n  glue_sql(  \n  \"CREATE OR REPLACE VIEW franceRP\",\n  \"AS SELECT CANTVILLE, AGED, SEXE, IPONDI FROM read_parquet('https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet') LIMIT 5\"),\n    .con=con\n)\n\n\n\n\n\n\nInputs.table(\n  db.query(`SELECT CANTVILLE, AGED, SEXE FROM franceRP LIMIT 5`)\n)\n\n\n\n\n\n\n\n\nPlot.rectY(df_full, Plot.binX({y: \"sum\"}, {x: \"AGED\", y: d =&gt; d.SEXE == 1 ? d.IPONDI : -d.IPONDI, fill: \"SEXE\", tip: true})).plot({y: {label: \"Frequency\"}})\n\n\n\n\n\n\n\ndf_full = db.query(`SELECT * FROM franceRP LIMIT 1000000`)\n\n\n\n\n\n\n\nPlot = require('@observablehq/plot@0.6.12/dist/plot.umd.min.js')"
+  },
+  {
+    "objectID": "index.html#parquet-as-a-default-file-format-for-dissemination",
+    "href": "index.html#parquet-as-a-default-file-format-for-dissemination",
+    "title": "Parquet files for large  (and big)  data dissemination",
+    "section": "Parquet as a default file format for dissemination?",
+    "text": "Parquet as a default file format for dissemination?\n\nParquet can handle any size of data\n(small, large and big)\nAdopted as INSEE’s internal default file format, replacing SAS format (SAS7BDAT)\nOur experiment for bulk data dissemination was a great success!\n\n \nIs it the future of open data?\nFMI, read Robin Linacre’s post “Why parquet file are my preferred API for bulk open data?”\n\n\n\nSIS-CC Technical ATF - Scalable and blazing fast .Stat Suite – Third Session"
+  }
+]
