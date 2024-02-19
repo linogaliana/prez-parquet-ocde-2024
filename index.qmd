@@ -225,6 +225,10 @@ Plot.rectY(df_full, Plot.binX({y: "sum"}, {x: "AGED", y: (d) => d.SEXE == 1 ? 1 
 df_full = db.query(`SELECT * FROM franceRP LIMIT 1000000`)
 ```
 
+```{ojs}
+Plot = require('@observablehq/plot@0.6.12/dist/plot.umd.min.js')
+```
+
 :::
 
 ::::
